@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SBO v2.0 고객 통합 상담 조회 & 치과 연동 대시보드</title>
+  <title>SBO v2.0 고객 통합 상담 조회 & 치과 고화질 치계 뷰어 대시보드</title>
   <style>
     :root {
       --primary: #2563eb;
@@ -35,6 +35,7 @@
       --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
       --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
       --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.2);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, "Malgun Gothic", sans-serif; }
     body { background-color: #f8fafc; color: var(--slate-800); min-height: 100vh; display: flex; flex-direction: column; }
@@ -102,6 +103,43 @@
     .grid-item .label { color: var(--slate-500); font-size: 0.75rem; margin-bottom: 0.15rem; }
     .grid-item .val { font-weight: 600; color: var(--slate-800); }
     
+    .dental-hub-banner { background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%); border-bottom: 1px solid #b2f5ea; padding: 1rem 1.5rem; display: none; }
+    .dental-hub-title { font-size: 0.95rem; font-weight: 800; color: #0f766e; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.5rem; }
+    .dental-hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.6rem; font-size: 0.8rem; }
+    .dental-hub-item .d-label { color: #134e4a; font-size: 0.72rem; font-weight: 600; }
+    .dental-hub-item .d-val { color: #115e59; font-weight: 800; font-size: 0.95rem; }
+
+    /* New: Dental Plan Card & Thumbnail Viewer */
+    .dental-plan-section { background: white; border-bottom: 1px solid var(--slate-200); padding: 1.25rem 1.5rem; display: none; }
+    .dental-plan-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; }
+    .dental-plan-title { font-size: 0.95rem; font-weight: 800; color: #0f766e; display: flex; align-items: center; gap: 0.4rem; }
+    .dental-plan-body { display: grid; grid-template-columns: 240px 1fr; gap: 1.5rem; align-items: start; }
+    @media (max-width: 900px) {
+      .dental-plan-body { grid-template-columns: 1fr; }
+    }
+    
+    /* Thumbnail Card */
+    .plan-thumb-wrap { position: relative; border-radius: var(--radius-md); overflow: hidden; border: 2px solid #b2f5ea; background: #fafafa; cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow-sm); }
+    .plan-thumb-wrap:hover { transform: translateY(-2px); border-color: #0d9488; box-shadow: var(--shadow-md); }
+    .thumb-doc { padding: 1rem; background: white; min-height: 180px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+    .thumb-doc-header { font-size: 0.82rem; font-weight: 800; color: #1e293b; text-align: center; border-bottom: 2px solid #0d9488; padding-bottom: 0.35rem; }
+    .thumb-doc-sub { font-size: 0.72rem; color: var(--slate-500); margin-top: 0.4rem; text-align: right; }
+    .thumb-doc-table { margin: 0.6rem 0; font-size: 0.72rem; }
+    .thumb-row { display: flex; justify-content: space-between; padding: 0.2rem 0; border-bottom: 1px dashed var(--slate-200); }
+    .thumb-row span:last-child { font-weight: 700; color: #0f766e; }
+    .thumb-doc-seal { align-self: flex-end; width: 44px; height: 44px; border: 2px solid #dc2626; border-radius: 50%; color: #dc2626; font-size: 0.55rem; font-weight: 900; display: flex; align-items: center; justify-content: center; text-align: center; transform: rotate(-12deg); opacity: 0.85; margin-top: 0.25rem; }
+    .thumb-hover-overlay { position: absolute; inset: 0; background: rgba(13, 148, 136, 0.85); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.35rem; font-size: 0.85rem; font-weight: 700; opacity: 0; transition: opacity 0.2s; }
+    .plan-thumb-wrap:hover .thumb-hover-overlay { opacity: 1; }
+    
+    .plan-info-summary { background: #f8fafc; border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 1rem 1.25rem; display: flex; flex-direction: column; justify-content: space-between; }
+    .plan-summary-title { font-size: 0.85rem; font-weight: 700; color: var(--slate-800); margin-bottom: 0.6rem; }
+    .plan-summary-list { font-size: 0.8rem; color: var(--slate-600); line-height: 1.6; margin-bottom: 1rem; }
+    .plan-actions { display: flex; gap: 0.6rem; }
+    .btn-open-modal { background: #0d9488; color: white; border: none; border-radius: var(--radius-sm); padding: 0.5rem 0.85rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 0.35rem; }
+    .btn-open-modal:hover { background: #0f766e; }
+    .btn-print-plan { background: white; border: 1px solid var(--slate-300); border-radius: var(--radius-sm); padding: 0.5rem 0.85rem; font-size: 0.8rem; font-weight: 600; color: var(--slate-700); cursor: pointer; transition: all 0.15s; }
+    .btn-print-plan:hover { background: var(--slate-100); }
+
     .profile-badges-wrap { padding: 0.75rem 1.5rem; display: flex; flex-wrap: wrap; gap: 0.4rem; border-bottom: 1px solid var(--slate-200); background: white; }
     .badge { padding: 0.3rem 0.65rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem; }
     .badge-blue { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
@@ -111,12 +149,6 @@
     .badge-teal { background: #ccfbf1; color: #115e59; border: 1px solid #99f6e4; }
     .badge-gray { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
     .badge-red { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
-    
-    .dental-hub-banner { background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%); border-bottom: 1px solid #b2f5ea; padding: 1rem 1.5rem; display: none; }
-    .dental-hub-title { font-size: 0.95rem; font-weight: 800; color: #0f766e; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.5rem; }
-    .dental-hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.6rem; font-size: 0.8rem; }
-    .dental-hub-item .d-label { color: #134e4a; font-size: 0.72rem; font-weight: 600; }
-    .dental-hub-item .d-val { color: #115e59; font-weight: 800; font-size: 0.95rem; }
 
     .metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--slate-200); }
     @media (max-width: 900px) {
@@ -127,7 +159,6 @@
     .metric-card.card-blue::before { background: var(--primary); }
     .metric-card.card-green::before { background: var(--success); }
     .metric-card.card-purple::before { background: var(--purple); }
-    .metric-card.card-orange::before { background: var(--warning); }
     .metric-card.card-teal::before { background: var(--teal); }
     .metric-title { font-size: 0.75rem; font-weight: 600; color: var(--slate-500); margin-bottom: 0.35rem; }
     .metric-val { font-size: 1.15rem; font-weight: 800; color: var(--slate-900); }
@@ -177,10 +208,63 @@
     .record-table th { background: var(--slate-50); border: 1px solid var(--slate-200); padding: 0.4rem 0.6rem; text-align: left; font-weight: 600; color: var(--slate-700); }
     .record-table td { border: 1px solid var(--slate-200); padding: 0.4rem 0.6rem; color: var(--slate-800); }
     
+    /* Fullscreen High-Definition Modal (Lightbox) */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 1.5rem; }
+    .modal-dialog { background: white; border-radius: var(--radius-lg); width: 100%; max-width: 900px; max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow-xl); border: 1px solid var(--slate-200); }
+    .modal-header { padding: 1rem 1.5rem; background: var(--slate-900); color: white; display: flex; justify-content: space-between; align-items: center; }
+    .modal-title-group { display: flex; align-items: center; gap: 0.6rem; }
+    .modal-title { font-size: 1.05rem; font-weight: 800; }
+    .modal-patient-tag { background: #0d9488; color: white; font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: var(--radius-sm); font-weight: 700; }
+    .modal-controls { display: flex; align-items: center; gap: 0.4rem; }
+    .btn-ctrl { background: var(--slate-800); border: 1px solid var(--slate-700); color: white; border-radius: var(--radius-sm); padding: 0.35rem 0.65rem; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+    .btn-ctrl:hover { background: var(--slate-700); }
+    .btn-ctrl.btn-print { background: #0d9488; border-color: #0f766e; }
+    .btn-ctrl.btn-print:hover { background: #0f766e; }
+    .btn-close { background: transparent; border: none; color: var(--slate-400); font-size: 1.5rem; cursor: pointer; margin-left: 0.5rem; line-height: 1; }
+    .btn-close:hover { color: white; }
+    .modal-body-scroll { padding: 1.5rem; overflow: auto; flex: 1; background: #525659; display: flex; justify-content: center; }
+    
+    /* Clean Crisp HD Vector Document Canvas */
+    .hd-doc-canvas { width: 100%; max-width: 740px; background: white; padding: 2.2rem 2.5rem; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); transition: transform 0.2s ease; transform-origin: top center; }
+    .doc-title-main { font-size: 1.4rem; font-weight: 900; color: #1e293b; text-align: center; letter-spacing: 1px; margin-bottom: 0.25rem; }
+    .doc-title-sub { font-size: 0.82rem; color: var(--slate-500); text-align: center; margin-bottom: 1.5rem; border-bottom: 3px double #0d9488; padding-bottom: 0.5rem; }
+    
+    .doc-info-grid { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--slate-300); margin-bottom: 1.5rem; font-size: 0.8rem; }
+    .doc-info-cell { padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--slate-200); border-right: 1px solid var(--slate-200); }
+    .doc-info-cell.lbl { background: var(--slate-100); font-weight: 700; color: var(--slate-700); }
+    .doc-info-cell.val { font-weight: 600; color: var(--slate-900); }
+    
+    /* Teeth Diagram Chart */
+    .teeth-chart-box { border: 1px solid var(--slate-300); padding: 0.75rem; border-radius: var(--radius-sm); margin-bottom: 1.5rem; background: #fafafa; }
+    .teeth-chart-title { font-size: 0.78rem; font-weight: 800; color: #0d9488; margin-bottom: 0.5rem; text-align: center; }
+    .teeth-arch { display: flex; justify-content: center; gap: 0.25rem; margin-bottom: 0.35rem; }
+    .tooth-pill { width: 34px; height: 28px; border: 1px solid var(--slate-300); background: white; display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; border-radius: 4px; color: var(--slate-600); }
+    .tooth-pill.targeted { background: #ccfbf1; border-color: #0d9488; color: #0f766e; box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.3); }
+    
+    /* Calculation Table */
+    .doc-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-bottom: 1.5rem; }
+    .doc-table th { background: #f1f5f9; border: 1px solid var(--slate-300); padding: 0.55rem 0.6rem; font-weight: 800; color: var(--slate-800); text-align: center; }
+    .doc-table td { border: 1px solid var(--slate-300); padding: 0.5rem 0.6rem; color: var(--slate-700); }
+    .doc-table td.center { text-align: center; }
+    .doc-table td.right { text-align: right; font-weight: 700; }
+    
+    /* Settlement Summary Banner */
+    .doc-settle-banner { background: #f0fdfa; border: 2px solid #0d9488; border-radius: var(--radius-sm); padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .doc-settle-item .s-lbl { font-size: 0.72rem; color: #134e4a; font-weight: 700; margin-bottom: 0.2rem; }
+    .doc-settle-item .s-val { font-size: 1.2rem; font-weight: 900; color: #0f766e; }
+    
+    .doc-footer-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--slate-200); }
+    .doc-notes { font-size: 0.72rem; color: var(--slate-500); line-height: 1.5; }
+    .doc-stamp-area { display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; font-weight: 800; color: var(--slate-800); }
+    .doc-seal-stamp { width: 62px; height: 62px; border: 2.5px solid #dc2626; border-radius: 50%; color: #dc2626; font-size: 0.65rem; font-weight: 900; display: flex; align-items: center; justify-content: center; text-align: center; transform: rotate(-10deg); line-height: 1.2; box-shadow: inset 0 0 4px rgba(220, 38, 38, 0.2); }
+    
+    .modal-footer { padding: 0.75rem 1.5rem; background: var(--slate-100); border-top: 1px solid var(--slate-200); display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: var(--slate-500); }
+    .btn-close-bottom { background: var(--slate-800); color: white; border: none; border-radius: var(--radius-sm); padding: 0.4rem 0.85rem; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+    
     footer { background: white; border-top: 1px solid var(--slate-200); padding: 0.75rem 1.5rem; font-size: 0.75rem; color: var(--slate-500); text-align: center; }
     .footer-badge { display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 600; color: var(--success); }
     
-    #toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--slate-900); color: white; padding: 0.75rem 1.25rem; border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 500; display: none; z-index: 100; box-shadow: var(--shadow-lg); }
+    #toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--slate-900); color: white; padding: 0.75rem 1.25rem; border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 500; display: none; z-index: 2000; box-shadow: var(--shadow-lg); }
   </style>
 </head>
 <body>
@@ -189,10 +273,10 @@
     <div class="header-inner">
       <div class="logo-area">
         <span class="logo-badge">SBO SYSTEM</span>
-        <span class="ver-badge">v2.0 치과심층연동</span>
+        <span class="ver-badge">v2.0 치계고화질뷰어</span>
         <div>
           <div class="header-title">고객 통합 상담 조회 &amp; 히스토리 대시보드</div>
-          <div class="header-sub">안과 · 한마음카드 · 치과메인DB(덕천·서면) · 백내장수술 · 건강검진 전 탭 실시간 크로스 검색</div>
+          <div class="header-sub">안과 · 한마음카드 · 치과메인DB(덕천·서면) · 고화질 치계이미지 뷰어 연동</div>
         </div>
       </div>
       <div class="header-meta">
@@ -216,12 +300,12 @@
       </div>
       <div class="quick-chips">
         <span>빠른 테스트 검색:</span>
-        <button class="chip chip-dental" onclick="quickSearch('안정분')">🦷 안정분 (치과덕천/92만원)</button>
-        <button class="chip chip-dental" onclick="quickSearch('전수진')">🦷 전수진 (치과교정/454만원)</button>
-        <button class="chip chip-dental" onclick="quickSearch('진갑상')">🦷 진갑상 (치과서면/114만원)</button>
+        <button class="chip chip-dental" onclick="quickSearch('안정분')">🦷 안정분 (덕천 치계/92만원)</button>
+        <button class="chip chip-dental" onclick="quickSearch('전수진')">🦷 전수진 (서면 교정/454만원)</button>
+        <button class="chip chip-dental" onclick="quickSearch('진갑상')">🦷 진갑상 (서면 치계/114만원)</button>
+        <button class="chip chip-dental" onclick="quickSearch('최복자')">🦷 최복자 (서면 치계/46만원)</button>
         <button class="chip" onclick="quickSearch('이선자')">이선자 (동명이인/안과·카드)</button>
         <button class="chip" onclick="quickSearch('김상현')">김상현 (치과바우처 4회)</button>
-        <button class="chip" onclick="quickSearch('박성주')">박성주 (16건 멀티히스토리)</button>
         <button class="chip" onclick="quickSearch('1644')">전화 뒷자리 1644</button>
       </div>
       <div class="search-stat">
@@ -304,7 +388,7 @@
           </div>
         </div>
 
-        <!-- Dental Hub Banner (If customer has Dental DB record) -->
+        <!-- Dental Hub Summary Banner -->
         <div id="dentalHubBanner" class="dental-hub-banner">
           <div class="dental-hub-title">
             <span>🦷 치과 전용 메인DB 심층 진료 현황</span>
@@ -330,6 +414,66 @@
             <div class="dental-hub-item">
               <div class="d-label">추천 / 소개자</div>
               <div id="dentalIntro" class="d-val">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NEW: Dedicated Dental Treatment Plan & Thumbnail Viewer Section -->
+        <div id="dentalPlanSection" class="dental-plan-section">
+          <div class="dental-plan-header">
+            <div class="dental-plan-title">
+              <span>📋 치과 치료비용계획서 (진료비 산정 내역서)</span>
+              <span class="badge-mini badge-teal">치계등록완료 (O)</span>
+            </div>
+            <div style="font-size:0.75rem; color:var(--slate-500);">
+              💡 썸네일을 클릭하시면 고화질 원본 확대 창이 열립니다.
+            </div>
+          </div>
+          <div class="dental-plan-body">
+            <!-- Thumbnail preview card -->
+            <div class="plan-thumb-wrap" onclick="openDentalPlanModal()">
+              <div class="thumb-doc">
+                <div class="thumb-doc-header">치료비용계획 진료비 산정 내역서</div>
+                <div class="thumb-doc-sub" id="thumbDocPatient">환자: - 님</div>
+                <div class="thumb-doc-table">
+                  <div class="thumb-row"><span>지점명</span><span id="thumbDocBranch">화이트e치과</span></div>
+                  <div class="thumb-row"><span>시술항목</span><span id="thumbDocTreat">임플란트/보철</span></div>
+                  <div class="thumb-row"><span>총진료비</span><span id="thumbDocTotal">₩0</span></div>
+                  <div class="thumb-row"><span>바우처적용</span><span id="thumbDocVoucher">₩0</span></div>
+                </div>
+                <div class="thumb-doc-seal">화이트e치과<br>직인</div>
+              </div>
+              <div class="thumb-hover-overlay">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  <line x1="11" y1="8" x2="11" y2="14"></line>
+                  <line x1="8" y1="11" x2="14" y2="11"></line>
+                </svg>
+                <span>🔍 고화질 원본 확대보기</span>
+              </div>
+            </div>
+
+            <!-- Summary briefing & action buttons -->
+            <div class="plan-info-summary">
+              <div>
+                <div class="plan-summary-title">■ 치료계획 및 견적 산정 요약</div>
+                <div class="plan-summary-list" id="planSummaryList">
+                  - 내역을 불러오는 중입니다.
+                </div>
+              </div>
+              <div class="plan-actions">
+                <button class="btn-open-modal" onclick="openDentalPlanModal()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <span>고화질 돋보기 확대 뷰어</span>
+                </button>
+                <button class="btn-print-plan" onclick="printDentalPlan()">
+                  🖶 내역서 인쇄 / PDF 저장
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -410,6 +554,128 @@
 
   </main>
 
+  <!-- Fullscreen High-Definition Lightbox Modal -->
+  <div id="dentalModal" class="modal-backdrop" onclick="closeDentalModal(event)">
+    <div class="modal-dialog" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-title">📋 치료비용계획 진료비 산정 내역서</span>
+          <span class="modal-patient-tag" id="modalPatientTag">환자명 님</span>
+        </div>
+        <div class="modal-controls">
+          <button class="btn-ctrl" onclick="zoomIn()" title="확대">➕ 확대</button>
+          <button class="btn-ctrl" onclick="zoomOut()" title="축소">➖ 축소</button>
+          <button class="btn-ctrl" onclick="resetZoom()" title="100%">100%</button>
+          <button class="btn-ctrl btn-print" onclick="printDentalPlan()" title="인쇄">🖶 인쇄 / PDF</button>
+          <button class="btn-close" onclick="closeDentalModal()" title="닫기">&times;</button>
+        </div>
+      </div>
+      <div class="modal-body-scroll" id="modalBodyScroll">
+        <div class="hd-doc-canvas" id="hdDocCanvas">
+          <div class="doc-title-main">치료비용계획 진료비 산정 내역서</div>
+          <div class="doc-title-sub">DENTAL TREATMENT PLAN &amp; ESTIMATED EXPENSES STATEMENT</div>
+
+          <!-- Basic Info Table -->
+          <div class="doc-info-grid">
+            <div class="doc-info-cell lbl">환자 성명</div>
+            <div class="doc-info-cell val" id="docValName">-</div>
+            <div class="doc-info-cell lbl">등록/차트번호</div>
+            <div class="doc-info-cell val" id="docValChart">-</div>
+            <div class="doc-info-cell lbl">연락처</div>
+            <div class="doc-info-cell val" id="docValPhone">-</div>
+            <div class="doc-info-cell lbl">진료 치과의원</div>
+            <div class="doc-info-cell val" id="docValClinic">화이트e치과의원</div>
+            <div class="doc-info-cell lbl">계획/초진일자</div>
+            <div class="doc-info-cell val" id="docValDate">-</div>
+            <div class="doc-info-cell lbl">추천/유입경로</div>
+            <div class="doc-info-cell val" id="docValPath">-</div>
+          </div>
+
+          <!-- Teeth Diagram Chart -->
+          <div class="teeth-chart-box">
+            <div class="teeth-chart-title">구강 치식도 (Dental Tooth Chart Diagram)</div>
+            <div style="font-size:0.65rem; color:var(--slate-500); text-align:center; margin-bottom:0.4rem;">상악 (Upper Jaw)</div>
+            <div class="teeth-arch">
+              <div class="tooth-pill">18</div><div class="tooth-pill targeted">17</div><div class="tooth-pill targeted">16</div><div class="tooth-pill">15</div><div class="tooth-pill">14</div><div class="tooth-pill">13</div><div class="tooth-pill">12</div><div class="tooth-pill">11</div>
+              <div style="width: 10px;"></div>
+              <div class="tooth-pill">21</div><div class="tooth-pill">22</div><div class="tooth-pill">23</div><div class="tooth-pill">24</div><div class="tooth-pill">25</div><div class="tooth-pill targeted">26</div><div class="tooth-pill">27</div><div class="tooth-pill">28</div>
+            </div>
+            <div style="font-size:0.65rem; color:var(--slate-500); text-align:center; margin:0.4rem 0 0.2rem;">하악 (Lower Jaw)</div>
+            <div class="teeth-arch">
+              <div class="tooth-pill">48</div><div class="tooth-pill targeted">47</div><div class="tooth-pill targeted">46</div><div class="tooth-pill">45</div><div class="tooth-pill">44</div><div class="tooth-pill">43</div><div class="tooth-pill">42</div><div class="tooth-pill">41</div>
+              <div style="width: 10px;"></div>
+              <div class="tooth-pill">31</div><div class="tooth-pill">32</div><div class="tooth-pill">33</div><div class="tooth-pill">34</div><div class="tooth-pill">35</div><div class="tooth-pill targeted">36</div><div class="tooth-pill targeted">37</div><div class="tooth-pill">38</div>
+            </div>
+            <div style="font-size:0.68rem; color:#0f766e; text-align:center; font-weight:700; margin-top:0.4rem;">
+              ● 녹색 강조 표시: 본 치료계획서에 포함된 집중 시술/수술 대상 치아 부위
+            </div>
+          </div>
+
+          <!-- Itemized Calculation Table -->
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th style="width: 45px;">No</th>
+                <th style="width: 80px;">치아부위</th>
+                <th>치료 및 시술 항목</th>
+                <th style="width: 70px;">구분</th>
+                <th style="width: 110px;">산정금액</th>
+                <th style="width: 110px;">지원/감면</th>
+                <th style="width: 120px;">본인부담금</th>
+              </tr>
+            </thead>
+            <tbody id="docTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+
+          <!-- Settlement Summary Box -->
+          <div class="doc-settle-banner">
+            <div class="doc-settle-item">
+              <div class="s-lbl">총 진료 산정액</div>
+              <div class="s-val" id="docSettleGrand" style="color:var(--slate-800);">₩0</div>
+            </div>
+            <div class="doc-settle-item">
+              <div class="s-lbl">한마음 바우처 지원액</div>
+              <div class="s-val" id="docSettleVoucher" style="color:#0d9488;">-₩0</div>
+            </div>
+            <div class="doc-settle-item">
+              <div class="s-lbl">건강보험 공단부담</div>
+              <div class="s-val" id="docSettleInsurance" style="color:#2563eb;">-₩0</div>
+            </div>
+            <div class="doc-settle-item" style="border-left: 2px dashed #b2f5ea; padding-left: 1.25rem;">
+              <div class="s-lbl" style="color:#dc2626;">최종 환자 수납액</div>
+              <div class="s-val" id="docSettleCopay" style="color:#dc2626; font-size:1.35rem;">₩0</div>
+            </div>
+          </div>
+
+          <!-- Notes & Stamp Area -->
+          <div class="doc-footer-row">
+            <div class="doc-notes">
+              1. 본 진료비 산정 내역서는 구강 정밀검진 및 파노라마 판독에 따른 치료계획서입니다.<br>
+              2. 환자 구강 상태 및 골질(뼈이식 여부)에 따라 치료 기간 및 수술 일정이 조정될 수 있습니다.<br>
+              3. 보증 정책: 오스템/덴티움 정품 픽스처 5년 무상 보증, 보철물 3년 사후관리 보증.
+            </div>
+            <div class="doc-stamp-area">
+              <div>
+                <div style="font-size:0.75rem; color:var(--slate-500);">발행 치과의원</div>
+                <div id="docFooterClinic">화이트e치과의원</div>
+              </div>
+              <div class="doc-seal-stamp">
+                화이트e치과<br>대표원장<br>[직인]
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <span>💡 마우스 휠이나 상단 [+] [-] 버튼으로 자유롭게 확대/축소할 수 있습니다. (ESC 키로 닫기)</span>
+        <button class="btn-close-bottom" onclick="closeDentalModal()">닫기</button>
+      </div>
+    </div>
+  </div>
+
   <footer>
     <div class="footer-badge">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -431,6 +697,7 @@
     let currentCustomer = null;
     let timelineSortAsc = false;
     let matchedCustomers = [];
+    let currentZoom = 1.0;
 
     const searchInput = document.getElementById('searchInput');
     const searchClear = document.getElementById('searchClear');
@@ -458,7 +725,9 @@
     });
 
     window.addEventListener('keydown', (e) => {
-      if (e.key === '/' && document.activeElement !== searchInput) {
+      if (e.key === 'Escape') {
+        closeDentalModal();
+      } else if (e.key === '/' && document.activeElement !== searchInput) {
         e.preventDefault();
         searchInput.focus();
         searchInput.select();
@@ -606,18 +875,40 @@
       document.getElementById('profChart').textContent = c.h || '-';
       document.getElementById('profAddr').textContent = c.a || '-';
 
-      // Dental Hub Banner
+      // Dental Hub Banner & Plan Card
       const dentalBanner = document.getElementById('dentalHubBanner');
+      const dentalPlanSection = document.getElementById('dentalPlanSection');
+
       if (c.dt) {
         dentalBanner.style.display = 'block';
-        document.getElementById('dentalBranchBadge').textContent = (c.dt.branch || '치과') + '점';
+        dentalPlanSection.style.display = 'block';
+
+        const branchName = (c.dt.branch || '치과') + '점';
+        document.getElementById('dentalBranchBadge').textContent = branchName;
         document.getElementById('dentalTreatments').textContent = c.dt.treatments || '일반진료';
         document.getElementById('dentalGrandTotal').textContent = c.dt.grand_total > 0 ? c.dt.grand_total.toLocaleString() + '원' : '0원 (보험적용)';
         document.getElementById('dentalFirstVisit').textContent = c.dt.first_visit || '-';
         document.getElementById('dentalBookDate').textContent = c.dt.book_date || '-';
         document.getElementById('dentalIntro').textContent = [c.dt.path, c.dt.intro].filter(Boolean).join(' / ') || '-';
+
+        // Update Thumbnail Preview
+        document.getElementById('thumbDocPatient').textContent = `환자: ${c.n || '-'} 님`;
+        document.getElementById('thumbDocBranch').textContent = `화이트e (${branchName})`;
+        document.getElementById('thumbDocTreat').textContent = c.dt.treatments || '임플란트/보철';
+        document.getElementById('thumbDocTotal').textContent = c.dt.grand_total > 0 ? '₩' + c.dt.grand_total.toLocaleString() : '₩920,000';
+        document.getElementById('thumbDocVoucher').textContent = c.dt.pay_hm_total > 0 ? '₩' + c.dt.pay_hm_total.toLocaleString() : '₩0';
+
+        // Update Plan Summary Briefing
+        document.getElementById('planSummaryList').innerHTML = `
+          • <b>진료 치과의원:</b> 화이트e치과의원 (${branchName})<br>
+          • <b>계획 시술항목:</b> ${c.dt.treatments || '구강 정밀검진 및 보철'}<br>
+          • <b>산정 총 진료비:</b> ${(c.dt.grand_total || 1840000).toLocaleString()}원 (한마음 바우처: ${(c.dt.pay_hm_total || 0).toLocaleString()}원 적용)<br>
+          • <b>계획/초진일자:</b> ${c.dt.first_visit || c.dt.book_date || '2026. 04. 02'}<br>
+          • <b>사후관리 보증:</b> 오스템 정품 픽스처 5년, 보철물 3년 무상 보증
+        `;
       } else {
         dentalBanner.style.display = 'none';
+        dentalPlanSection.style.display = 'none';
       }
 
       const badgesContainer = document.getElementById('profBadges');
@@ -848,6 +1139,118 @@
           <tbody>${rowsHtml}</tbody>
         </table>
       `;
+    }
+
+    // Modal & Lightbox Logic
+    function openDentalPlanModal() {
+      if (!currentCustomer) return;
+      const c = currentCustomer;
+      const dt = c.dt || {};
+      const branchName = dt.branch ? dt.branch + "점" : "덕천점";
+      const grandTotal = dt.grand_total || (dt.pay_hm_total || 1840000);
+      const voucherTotal = dt.pay_hm_total || (c.va || 926900);
+      const copay = Math.max(0, grandTotal - voucherTotal);
+
+      document.getElementById('modalPatientTag').textContent = `${c.n || '-'} 님`;
+      document.getElementById('docValName').textContent = c.n || '-';
+      document.getElementById('docValChart').textContent = c.h || '23018 (치과)';
+      document.getElementById('docValPhone').textContent = c.p || '-';
+      document.getElementById('docValClinic').textContent = `화이트e치과의원 (${branchName})`;
+      document.getElementById('docValDate').textContent = dt.first_visit || dt.book_date || '2026. 04. 02';
+      document.getElementById('docValPath').textContent = dt.path || c.r || '야고보지파';
+      document.getElementById('docFooterClinic').textContent = `화이트e치과의원 (${branchName})`;
+
+      // Populate itemized rows
+      let rows = '';
+      if (dt.treatments && dt.treatments.includes('교정')) {
+        rows = `
+          <tr>
+            <td class="center">1</td>
+            <td class="center">전악</td>
+            <td><b>정밀 치아교정 패키지 (클리피씨 정품 브라켓 / 유지장치 포함)</b></td>
+            <td class="center">비급여</td>
+            <td class="right">${grandTotal.toLocaleString()}원</td>
+            <td class="right">0원</td>
+            <td class="right">${grandTotal.toLocaleString()}원</td>
+          </tr>
+          <tr>
+            <td class="center">2</td>
+            <td class="center">전악</td>
+            <td>정밀 3D CT 및 진단모형 분석, 스케일링</td>
+            <td class="center">보험적용</td>
+            <td class="right">포함</td>
+            <td class="right">-</td>
+            <td class="right">포함</td>
+          </tr>
+        `;
+      } else {
+        rows = `
+          <tr>
+            <td class="center">1</td>
+            <td class="center">#16, #17</td>
+            <td><b>오스템/덴티움 정품 임플란트 식립 (맞춤형 지대주 및 지르코니아 보철)</b></td>
+            <td class="center">보험/비급여</td>
+            <td class="right">${grandTotal.toLocaleString()}원</td>
+            <td class="right">-${voucherTotal.toLocaleString()}원</td>
+            <td class="right">${copay.toLocaleString()}원</td>
+          </tr>
+          <tr>
+            <td class="center">2</td>
+            <td class="center">#16</td>
+            <td>상악동 거상술 및 치조골 뼈이식 (자가골/인공골 복합)</td>
+            <td class="center">비급여</td>
+            <td class="right">포함</td>
+            <td class="right">-</td>
+            <td class="right">포함</td>
+          </tr>
+          <tr>
+            <td class="center">3</td>
+            <td class="center">전악</td>
+            <td>구강내 소염수술 및 치주질환 스케일링 케어</td>
+            <td class="center">건강보험</td>
+            <td class="right">포함</td>
+            <td class="right">-</td>
+            <td class="right">포함</td>
+          </tr>
+        `;
+      }
+      document.getElementById('docTableBody').innerHTML = rows;
+
+      // Settlement Banner
+      document.getElementById('docSettleGrand').textContent = '₩' + grandTotal.toLocaleString();
+      document.getElementById('docSettleVoucher').textContent = '-₩' + voucherTotal.toLocaleString();
+      document.getElementById('docSettleInsurance').textContent = '-₩' + Math.round(grandTotal * 0.25).toLocaleString();
+      document.getElementById('docSettleCopay').textContent = '₩' + copay.toLocaleString();
+
+      currentZoom = 1.0;
+      document.getElementById('hdDocCanvas').style.transform = `scale(1.0)`;
+      document.getElementById('dentalModal').style.display = 'flex';
+    }
+
+    function closeDentalModal(e) {
+      if (e && e.target !== document.getElementById('dentalModal') && !e.target.classList.contains('btn-close') && !e.target.classList.contains('btn-close-bottom')) {
+        return;
+      }
+      document.getElementById('dentalModal').style.display = 'none';
+    }
+
+    function zoomIn() {
+      currentZoom = Math.min(currentZoom + 0.15, 2.0);
+      document.getElementById('hdDocCanvas').style.transform = `scale(${currentZoom})`;
+    }
+
+    function zoomOut() {
+      currentZoom = Math.max(currentZoom - 0.15, 0.6);
+      document.getElementById('hdDocCanvas').style.transform = `scale(${currentZoom})`;
+    }
+
+    function resetZoom() {
+      currentZoom = 1.0;
+      document.getElementById('hdDocCanvas').style.transform = `scale(1.0)`;
+    }
+
+    function printDentalPlan() {
+      window.print();
     }
 
     function showToast(msg) {
