@@ -270,7 +270,7 @@
     <div class="header-inner">
       <div class="logo-area">
         <span class="logo-badge">SBO SYSTEM</span>
-        <span class="ver-badge">v3.3 하단상담일지체크수정</span>
+        <span class="ver-badge">v3.4 실시간상담일지완성</span>
         <div>
           <div class="header-title">고객 통합 상담 조회 &amp; 히스토리 대시보드</div>
           <div class="header-sub">원본 메인DB · 치과원본DB(100% 읽기전용) · 하단 상담일지 디스플레이 체크 수정/삭제 및 시트 연동</div>
@@ -1203,7 +1203,8 @@
 
     
     // --- v3.3 하단 상담일지 메모 디스플레이 창 체크박스 수정/삭제 & 구글 시트 동기화 ---
-    let APPS_SCRIPT_WEBAPP_URL = localStorage.getItem("SBO_APPS_SCRIPT_URL") || "";
+    const DEFAULT_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKQuFWP0iU2DzX3rLlinfzcW4Oco5dnL6HL8rZuL9VkCA7mZiGM9WLzawo1iz8AyvWvg/exec";
+    let APPS_SCRIPT_WEBAPP_URL = localStorage.getItem("SBO_APPS_SCRIPT_URL") || DEFAULT_APPS_SCRIPT_URL;
     let editingLogId = null;
 
     function getCustomerLogKey(c) {
@@ -1599,6 +1600,59 @@
       showToast(isEdit ? `상담메모가 수정되었습니다! [약속: ${appointment} / 병원: ${hospital}]` : `상담메모 저장 완료! 하단 상담일지 창에서 확인하세요.`);
     }
 
+    async function fetchCloudLogsFromSheet() {
+      if (!APPS_SCRIPT_WEBAPP_URL) return;
+      try {
+        const res = await fetch(APPS_SCRIPT_WEBAPP_URL);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data && data.status === "success" && Array.isArray(data.logs)) {
+          const grouped = {};
+          data.logs.forEach((row, idx) => {
+            const cPhone = cleanDigits(row.phone);
+            const cName = (row.name || "").trim();
+            let targetCust = null;
+            for (let i = 0; i < CUSTOMERS.length; i++) {
+              const cust = CUSTOMERS[i];
+              if (cPhone && cleanDigits(cust.p) === cPhone) {
+                targetCust = cust;
+                break;
+              }
+            }
+            if (!targetCust && cName) {
+              targetCust = CUSTOMERS.find(cust => (cust.n || "").trim() === cName);
+            }
+            if (targetCust) {
+              const key = getCustomerLogKey(targetCust);
+              if (!grouped[key]) grouped[key] = [];
+              grouped[key].unshift({
+                logId: "CLOUD_" + idx + "_" + cleanDigits(row.callDate),
+                callDate: row.callDate,
+                name: row.name,
+                card: row.card,
+                phone: row.phone,
+                memo: row.memo,
+                appointment: row.appointment || "없음",
+                hospital: row.hospital || "없음"
+              });
+            }
+          });
+          for (const [k, list] of Object.entries(grouped)) {
+            localStorage.setItem(k, JSON.stringify(list));
+          }
+          if (currentCustomer) {
+            loadCustomerSavedLogs(currentCustomer);
+            renderTimeline(currentCustomer);
+            renderAnalytics(currentCustomer);
+            renderRawTabs(currentCustomer);
+          }
+        }
+      } catch (err) {
+        console.warn("Cloud sheet initial fetch skipped or offline:", err);
+      }
+    }
+
+
     function showToast(msg) {
       const t = document.getElementById('toast');
       t.textContent = msg;
@@ -1636,6 +1690,7 @@
 
     // Default search on load
     performSearch('010-7701-5763');
+    fetchCloudLogsFromSheet();
   </script>
 </body>
 </html>
