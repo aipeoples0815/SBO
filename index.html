@@ -198,50 +198,69 @@
     
     #toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--slate-900); color: white; padding: 0.75rem 1.25rem; border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 500; display: none; z-index: 2000; box-shadow: var(--shadow-lg); }
   
-    /* Consultation Memo Button & Popup Modal */
+    /* Consultation Memo Button & Popup Modal (v3.2 CRUD) */
     .btn-memo-popup { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; border-radius: var(--radius-md); padding: 0.65rem 1.15rem; font-size: 0.92rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25); transition: all 0.15s; }
     .btn-memo-popup:hover { background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%); transform: translateY(-1px); box-shadow: 0 6px 14px rgba(37, 99, 235, 0.35); }
     .btn-memo-sheet { background: white; color: var(--slate-700); border: 1px solid var(--slate-300); border-radius: var(--radius-md); padding: 0.6rem 0.9rem; font-size: 0.82rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; transition: all 0.15s; }
     .btn-memo-sheet:hover { background: var(--slate-100); border-color: var(--slate-400); }
 
+    /* Timeline Edit/Delete Buttons for SBO-상담일지 items */
+    .timeline-node.node-consult { border-color: #2563eb; background: #dbeafe; }
+    .timeline-card.card-consult { border-color: #bfdbfe; background: #f8fbff; }
+    .timeline-crud-btns { display: inline-flex; align-items: center; gap: 0.3rem; margin-left: 0.5rem; }
+    .btn-tl-edit { background: white; border: 1px solid #93c5fd; color: #1d4ed8; border-radius: 4px; padding: 0.12rem 0.45rem; font-size: 0.7rem; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+    .btn-tl-edit:hover { background: #eff6ff; border-color: #2563eb; }
+    .btn-tl-del { background: white; border: 1px solid #fca5a5; color: #dc2626; border-radius: 4px; padding: 0.12rem 0.45rem; font-size: 0.7rem; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+    .btn-tl-del:hover { background: #fef2f2; border-color: #ef4444; }
+
     .consult-modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.72); backdrop-filter: blur(4px); z-index: 1500; display: none; align-items: center; justify-content: center; padding: 1.25rem; }
-    .consult-modal-dialog { background: white; border-radius: var(--radius-lg); width: 100%; max-width: 680px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); border: 1px solid var(--slate-200); animation: modalFadeIn 0.18s ease-out; }
+    .consult-modal-dialog { background: white; border-radius: var(--radius-lg); width: 100%; max-width: 700px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); border: 1px solid var(--slate-200); animation: modalFadeIn 0.18s ease-out; }
     @keyframes modalFadeIn { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
     
     .consult-modal-header { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 1.1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
     .consult-modal-title { font-size: 1.1rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; }
+    .edit-mode-badge { background: #f59e0b; color: white; font-size: 0.72rem; padding: 0.15rem 0.55rem; border-radius: 9999px; font-weight: 800; display: none; }
     .consult-modal-close { background: rgba(255,255,255,0.1); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
     .consult-modal-close:hover { background: rgba(255,255,255,0.25); }
     
-    .consult-modal-body { padding: 1.5rem; max-height: 80vh; overflow-y: auto; }
-    .consult-form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.85rem; margin-bottom: 1rem; }
+    .consult-modal-body { padding: 1.35rem 1.5rem; max-height: 78vh; overflow-y: auto; }
+    .consult-form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 0.9rem; }
     @media (max-width: 600px) { .consult-form-grid { grid-template-columns: 1fr; } }
-    .form-group label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--slate-600); margin-bottom: 0.3rem; }
-    .form-group input { width: 100%; padding: 0.55rem 0.75rem; border: 1px solid var(--slate-300); border-radius: var(--radius-sm); font-size: 0.88rem; outline: none; background: #f8fafc; font-weight: 600; color: var(--slate-800); }
+    .form-group label { display: block; font-size: 0.74rem; font-weight: 700; color: var(--slate-600); margin-bottom: 0.25rem; }
+    .form-group input { width: 100%; padding: 0.5rem 0.7rem; border: 1px solid var(--slate-300); border-radius: var(--radius-sm); font-size: 0.86rem; outline: none; background: #f8fafc; font-weight: 600; color: var(--slate-800); }
     .form-group input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
     
-    .memo-textarea-wrap { margin-bottom: 1rem; }
-    .memo-textarea-wrap label { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 800; color: var(--slate-800); margin-bottom: 0.4rem; }
-    .memo-textarea { width: 100%; height: 110px; padding: 0.75rem 0.9rem; border: 1.5px solid var(--slate-300); border-radius: var(--radius-md); font-size: 0.92rem; outline: none; resize: vertical; line-height: 1.55; font-family: inherit; }
+    .memo-textarea-wrap { margin-bottom: 0.9rem; }
+    .memo-textarea-wrap label { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 800; color: var(--slate-800); margin-bottom: 0.35rem; }
+    .memo-textarea { width: 100%; height: 95px; padding: 0.7rem 0.85rem; border: 1.5px solid var(--slate-300); border-radius: var(--radius-md); font-size: 0.9rem; outline: none; resize: vertical; line-height: 1.5; font-family: inherit; }
     .memo-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12); }
     
-    .ai-analysis-box { background: #f0fdf4; border: 1.5px solid #86efac; border-radius: var(--radius-md); padding: 0.9rem 1.1rem; margin-bottom: 1rem; }
-    .ai-analysis-header { font-size: 0.8rem; font-weight: 800; color: #166534; margin-bottom: 0.6rem; display: flex; justify-content: space-between; align-items: center; }
-    .ai-analysis-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
-    .ai-field label { display: block; font-size: 0.72rem; font-weight: 700; color: #15803d; margin-bottom: 0.25rem; }
-    .ai-field input { width: 100%; padding: 0.45rem 0.65rem; border: 1px solid #86efac; border-radius: var(--radius-sm); background: white; font-size: 0.85rem; font-weight: 800; color: #14532d; outline: none; }
-    .ai-field input:focus { border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15); }
+    .ai-analysis-box { background: #f0fdf4; border: 1.5px solid #86efac; border-radius: var(--radius-md); padding: 0.8rem 1rem; margin-bottom: 0.9rem; }
+    .ai-analysis-header { font-size: 0.78rem; font-weight: 800; color: #166534; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; }
+    .ai-analysis-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.7rem; }
+    .ai-field label { display: block; font-size: 0.7rem; font-weight: 700; color: #15803d; margin-bottom: 0.2rem; }
+    .ai-field input { width: 100%; padding: 0.42rem 0.6rem; border: 1px solid #86efac; border-radius: var(--radius-sm); background: white; font-size: 0.84rem; font-weight: 800; color: #14532d; outline: none; }
 
-    .gas-config-box { background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-sm); padding: 0.65rem 0.85rem; font-size: 0.75rem; color: var(--slate-600); }
+    /* Modal Saved Memo List for Easy Edit/Delete */
+    .modal-history-section { border-top: 1px solid var(--slate-200); padding-top: 0.85rem; margin-bottom: 0.85rem; }
+    .modal-history-title { font-size: 0.78rem; font-weight: 800; color: var(--slate-700); margin-bottom: 0.45rem; display: flex; justify-content: space-between; align-items: center; }
+    .modal-history-list { max-height: 135px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.4rem; }
+    .modal-history-item { background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-sm); padding: 0.5rem 0.75rem; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; font-size: 0.78rem; }
+    .modal-history-info { flex: 1; overflow: hidden; }
+    .modal-history-meta { font-size: 0.7rem; color: var(--slate-500); font-weight: 600; margin-bottom: 0.15rem; }
+    .modal-history-text { color: var(--slate-800); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .gas-config-box { background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-sm); padding: 0.6rem 0.8rem; font-size: 0.74rem; color: var(--slate-600); }
     .gas-config-toggle { cursor: pointer; font-weight: 700; color: var(--primary); display: inline-flex; align-items: center; gap: 0.3rem; }
-    .gas-config-input-wrap { margin-top: 0.5rem; display: none; gap: 0.4rem; }
-    .gas-config-input-wrap input { flex: 1; padding: 0.4rem 0.6rem; border: 1px solid var(--slate-300); border-radius: var(--radius-sm); font-size: 0.78rem; }
-    .btn-save-url { background: var(--slate-800); color: white; border: none; padding: 0.4rem 0.75rem; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+    .gas-config-input-wrap { margin-top: 0.45rem; display: none; gap: 0.4rem; }
+    .gas-config-input-wrap input { flex: 1; padding: 0.38rem 0.6rem; border: 1px solid var(--slate-300); border-radius: var(--radius-sm); font-size: 0.76rem; }
+    .btn-save-url { background: var(--slate-800); color: white; border: none; padding: 0.38rem 0.7rem; border-radius: var(--radius-sm); font-size: 0.74rem; font-weight: 700; cursor: pointer; }
 
-    .consult-modal-footer { padding: 1rem 1.5rem; background: var(--slate-50); border-top: 1px solid var(--slate-200); display: flex; justify-content: space-between; align-items: center; }
-    .btn-modal-cancel { background: white; border: 1px solid var(--slate-300); color: var(--slate-700); padding: 0.6rem 1.1rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    .consult-modal-footer { padding: 0.9rem 1.5rem; background: var(--slate-50); border-top: 1px solid var(--slate-200); display: flex; justify-content: space-between; align-items: center; }
+    .btn-modal-cancel { background: white; border: 1px solid var(--slate-300); color: var(--slate-700); padding: 0.55rem 1.05rem; border-radius: var(--radius-sm); font-size: 0.84rem; font-weight: 700; cursor: pointer; }
     .btn-modal-cancel:hover { background: var(--slate-100); }
-    .btn-modal-submit { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; padding: 0.65rem 1.5rem; border-radius: var(--radius-sm); font-size: 0.9rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; box-shadow: var(--shadow-sm); }
+    .btn-modal-new { background: white; border: 1px solid var(--primary); color: var(--primary); padding: 0.55rem 0.95rem; border-radius: var(--radius-sm); font-size: 0.82rem; font-weight: 700; cursor: pointer; display: none; }
+    .btn-modal-submit { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; padding: 0.6rem 1.4rem; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; box-shadow: var(--shadow-sm); }
     .btn-modal-submit:hover { background: #1e40af; }
     .btn-modal-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 
@@ -253,10 +272,10 @@
     <div class="header-inner">
       <div class="logo-area">
         <span class="logo-badge">SBO SYSTEM</span>
-        <span class="ver-badge">v3.1 상담메모팝업</span>
+        <span class="ver-badge">v3.2 상담메모수정·삭제</span>
         <div>
           <div class="header-title">고객 통합 상담 조회 &amp; 히스토리 대시보드</div>
-          <div class="header-sub">원본 메인DB · 치과원본DB(100% 읽기전용) · 전화상담메모 팝업 및 AI 약속/병원 자동기록 연동</div>
+          <div class="header-sub">원본 메인DB · 치과원본DB(100% 읽기전용) · 상담메모 작성/수정/삭제 및 AI 약속/병원 자동기록 연동</div>
         </div>
       </div>
       <div class="header-meta">
@@ -522,12 +541,13 @@
   </main>
 
 
-  <!-- 김은미 부장님 요청: 상담메모 작성 및 AI 약속일시/진료병원 자동기록 팝업 모달 -->
+  <!-- 상담메모 작성 / 수정 / 삭제 팝업 모달 -->
   <div id="consultModal" class="consult-modal-backdrop" onclick="closeConsultModal(event)">
     <div class="consult-modal-dialog" onclick="event.stopPropagation()">
       <div class="consult-modal-header">
         <div class="consult-modal-title">
-          <span>✍️ 전화 상담 메모 작성 &amp; 상담일지 저장</span>
+          <span id="consultModalTitleText">✍️ 전화 상담 메모 작성 &amp; 상담일지 저장</span>
+          <span id="editModeBadge" class="edit-mode-badge">수정 모드</span>
         </div>
         <button class="consult-modal-close" onclick="closeConsultModal()" title="닫기 (ESC)">&times;</button>
       </div>
@@ -577,9 +597,18 @@
           </div>
         </div>
 
+        <!-- 고객별 작성된 상담메모 내역 (수정/삭제 지원) -->
+        <div class="modal-history-section">
+          <div class="modal-history-title">
+            <span>🗂️ 이 고객의 작성된 상담메모 목록 (수정 / 삭제)</span>
+            <span style="font-size:0.7rem; color:var(--slate-500);">타임라인 카드에서도 바로 수정·삭제할 수 있습니다</span>
+          </div>
+          <div id="modalHistoryList" class="modal-history-list"></div>
+        </div>
+
         <div class="gas-config-box">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span id="consultApiStatus"><span style="color:#10b981;">●</span> 상담일지 DB 연동 대기 중</span>
+            <span id="consultApiStatus"><span style="color:#10b981;">●</span> 상담일지 DB 연동 준비 완료</span>
             <span class="gas-config-toggle" onclick="toggleGasConfig()">⚙️ 구글시트 연동 URL 설정</span>
           </div>
           <div id="gasConfigWrap" class="gas-config-input-wrap">
@@ -590,14 +619,17 @@
       </div>
 
       <div class="consult-modal-footer">
-        <button class="btn-modal-cancel" onclick="closeConsultModal()">취소 / 닫기</button>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn-modal-cancel" onclick="closeConsultModal()">닫기</button>
+          <button class="btn-modal-new" id="btnCancelEdit" onclick="resetConsultModalToNew()">+ 새 메모 작성으로 전환</button>
+        </div>
         <button class="btn-modal-submit" id="btnSaveConsult" onclick="saveConsultationLog()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
             <polyline points="17 21 17 13 7 13 7 21"></polyline>
             <polyline points="7 3 7 8 15 8"></polyline>
           </svg>
-          <span>저장 (상담일지 DB 기록)</span>
+          <span id="btnSaveConsultText">저장 (상담일지 DB 기록)</span>
         </button>
       </div>
     </div>
@@ -766,6 +798,7 @@
       const c = CUSTOMERS[custIdx];
       if (!c) return;
       currentCustomer = c;
+      loadCustomerSavedLogs(c);
       renderCustomerList();
       renderCustomerDetail(c);
     }
@@ -956,20 +989,38 @@
 
       let html = '';
       events.forEach(e => {
-        const [d, cat, typ, stat, sum, det, sheet] = e;
+        const [d, cat, typ, stat, sum, det, sheet, logId] = e;
         let nodeColor = '';
+        let cardClass = '';
         if (cat === '안과') nodeColor = 'node-green';
         else if (cat === '치과심층') nodeColor = 'node-teal';
         else if (cat === '치과' || cat === '바우처사용') nodeColor = 'node-purple';
         else if (cat === '백내장수술') nodeColor = 'node-orange';
+        else if (sheet === 'SBO-상담일지' || cat === '상담일지') {
+          nodeColor = 'node-consult';
+          cardClass = 'card-consult';
+        }
+
+        let crudBtns = '';
+        if ((sheet === 'SBO-상담일지' || cat === '상담일지') && logId) {
+          crudBtns = `
+            <span class="timeline-crud-btns">
+              <button class="btn-tl-edit" onclick="editConsultationLog('${logId}')" title="이 상담메모 수정">✏️ 수정</button>
+              <button class="btn-tl-del" onclick="deleteConsultationLog('${logId}')" title="이 상담메모 삭제">🗑️ 삭제</button>
+            </span>
+          `;
+        }
 
         html += `
           <div class="timeline-item">
             <div class="timeline-node ${nodeColor}"></div>
-            <div class="timeline-card">
+            <div class="timeline-card ${cardClass}">
               <div class="timeline-top">
                 <span class="timeline-date">${d || '일자 미기재'}</span>
-                <span class="timeline-sheet-tag">${sheet}</span>
+                <div>
+                  <span class="timeline-sheet-tag">${sheet}</span>
+                  ${crudBtns}
+                </div>
               </div>
               <div class="timeline-summary">${sum}</div>
               <div class="timeline-desc">${det || ''}</div>
@@ -1108,8 +1159,47 @@
     }
 
     
-    // --- 상담메모 팝업 모달 & AI 약속/병원 자동 분석 로직 ---
+    // --- 상담메모 팝업 모달 (작성 / 수정 / 삭제 CRUD) & AI 자동 분석 로직 ---
     let APPS_SCRIPT_WEBAPP_URL = localStorage.getItem("SBO_APPS_SCRIPT_URL") || "";
+    let editingLogId = null;
+
+    function getCustomerLogKey(c) {
+      return "SBO_LOG_" + ((c && (c.p || c.n || c.i)) || "default");
+    }
+
+    function getSavedLogsForCustomer(c) {
+      try {
+        return JSON.parse(localStorage.getItem(getCustomerLogKey(c)) || "[]");
+      } catch(e) {
+        return [];
+      }
+    }
+
+    function setSavedLogsForCustomer(c, logs) {
+      localStorage.setItem(getCustomerLogKey(c), JSON.stringify(logs));
+    }
+
+    function loadCustomerSavedLogs(c) {
+      if (!c) return;
+      if (!c.ev) c.ev = [];
+      // Remove existing SBO-상담일지 events and re-inject from localStorage so edits/deletes stay in sync
+      c.ev = c.ev.filter(e => e[6] !== "SBO-상담일지");
+      const logs = getSavedLogsForCustomer(c);
+      for (let i = logs.length - 1; i >= 0; i--) {
+        const item = logs[i];
+        const evt = [
+          (item.callDate || "").split(" ")[0] || item.callDate,
+          "상담일지",
+          "전화상담",
+          "상담완료",
+          `전화상담: ${(item.memo || "").slice(0, 32)}${(item.memo || "").length > 32 ? "..." : ""}`,
+          `상담일시: ${item.callDate} | 상담내용: ${item.memo} | (AI)약속일시: ${item.appointment} | (AI)진료병원: ${item.hospital}`,
+          "SBO-상담일지",
+          item.logId
+        ];
+        c.ev.unshift(evt);
+      }
+    }
 
     function getNowFormatted() {
       const now = new Date();
@@ -1125,7 +1215,6 @@
       if (!text || !text.trim()) return { appointment: "없음", hospital: "없음" };
       const t = text.trim();
       
-      // 1. 진료병원 감지
       let hospital = "없음";
       const hospRegexes = [
         /(화이트\s*e\s*치과(?:\s*\(?[서덕해][가-힣]*점\)?)?)/i,
@@ -1139,14 +1228,13 @@
         /(연제\s*일신\s*병원)/,
         /(메디\s*우먼)/,
         /([가-힣]{2,10}(?:안과|치과|병원|의원))/,
-        /([덕서해]\w*점\s*(?:치과|안과)?)/
+        /([덕서해][가-힣]*점\s*(?:치과|안과)?)/
       ];
       for (let r of hospRegexes) {
         const m = t.match(r);
         if (m) { hospital = m[1].replace(/\s+/g, ' ').trim(); break; }
       }
       
-      // 2. 약속일시 감지
       let appointment = "없음";
       const dateRegexes = [
         /(\d{4}[-./년]\s*\d{1,2}[-./월]\s*\d{1,2}일?(?:\s*(?:오전|오후)?\s*\d{1,2}(?:시|:\d{2})(?:\s*\d{1,2}분)?)?)/,
@@ -1169,12 +1257,43 @@
       document.getElementById('aiHospInput').value = res.hospital;
     }
 
-    function openConsultModal() {
+    function renderModalHistoryList() {
+      const listEl = document.getElementById('modalHistoryList');
       if (!currentCustomer) {
-        alert("먼저 좌측 목록에서 상담할 고객을 선택해 주세요.");
+        listEl.innerHTML = '';
         return;
       }
+      const logs = getSavedLogsForCustomer(currentCustomer);
+      if (logs.length === 0) {
+        listEl.innerHTML = '<div style="color:var(--slate-400); font-size:0.75rem; padding:0.4rem 0;">아직 이 고객에게 작성된 상담메모가 없습니다.</div>';
+        return;
+      }
+      let html = '';
+      logs.forEach(item => {
+        html += `
+          <div class="modal-history-item">
+            <div class="modal-history-info">
+              <div class="modal-history-meta">${item.callDate} | 약속: ${item.appointment} | 병원: ${item.hospital}</div>
+              <div class="modal-history-text">${item.memo}</div>
+            </div>
+            <div class="timeline-crud-btns">
+              <button class="btn-tl-edit" onclick="editConsultationLog('${item.logId}')">✏️ 수정</button>
+              <button class="btn-tl-del" onclick="deleteConsultationLog('${item.logId}')">🗑️ 삭제</button>
+            </div>
+          </div>
+        `;
+      });
+      listEl.innerHTML = html;
+    }
+
+    function resetConsultModalToNew() {
+      if (!currentCustomer) return;
+      editingLogId = null;
       const c = currentCustomer;
+      document.getElementById('consultModalTitleText').textContent = '✍️ 전화 상담 메모 작성 & 상담일지 저장';
+      document.getElementById('editModeBadge').style.display = 'none';
+      document.getElementById('btnCancelEdit').style.display = 'none';
+      document.getElementById('btnSaveConsultText').textContent = '저장 (상담일지 DB 기록)';
       document.getElementById('consultDate').value = getNowFormatted();
       document.getElementById('consultName').value = c.n || '';
       document.getElementById('consultCard').value = c.c || '';
@@ -1182,11 +1301,99 @@
       document.getElementById('consultMemo').value = '';
       document.getElementById('aiApptInput').value = '없음';
       document.getElementById('aiHospInput').value = '없음';
+    }
+
+    function openConsultModal() {
+      if (!currentCustomer) {
+        alert("먼저 좌측 목록에서 상담할 고객을 선택해 주세요.");
+        return;
+      }
+      resetConsultModalToNew();
       document.getElementById('gasUrlInput').value = APPS_SCRIPT_WEBAPP_URL;
+      renderModalHistoryList();
       document.getElementById('consultModal').style.display = 'flex';
       setTimeout(() => {
         document.getElementById('consultMemo').focus();
       }, 50);
+    }
+
+    function editConsultationLog(logId) {
+      if (!currentCustomer) return;
+      const logs = getSavedLogsForCustomer(currentCustomer);
+      const target = logs.find(item => item.logId === logId);
+      if (!target) {
+        alert("해당 상담메모를 찾을 수 없습니다.");
+        return;
+      }
+      editingLogId = logId;
+      document.getElementById('consultModalTitleText').textContent = '✏️ 전화 상담 메모 수정';
+      document.getElementById('editModeBadge').style.display = 'inline-block';
+      document.getElementById('btnCancelEdit').style.display = 'inline-block';
+      document.getElementById('btnSaveConsultText').textContent = '수정 내용 저장 (DB 반영)';
+
+      document.getElementById('consultDate').value = target.callDate || getNowFormatted();
+      document.getElementById('consultName').value = target.name || currentCustomer.n || '';
+      document.getElementById('consultCard').value = target.card || currentCustomer.c || '';
+      document.getElementById('consultPhone').value = target.phone || currentCustomer.p || '';
+      document.getElementById('consultMemo').value = target.memo || '';
+      document.getElementById('aiApptInput').value = target.appointment || '없음';
+      document.getElementById('aiHospInput').value = target.hospital || '없음';
+      document.getElementById('gasUrlInput').value = APPS_SCRIPT_WEBAPP_URL;
+
+      renderModalHistoryList();
+      document.getElementById('consultModal').style.display = 'flex';
+      setTimeout(() => {
+        document.getElementById('consultMemo').focus();
+      }, 50);
+    }
+
+    async function deleteConsultationLog(logId) {
+      if (!currentCustomer) return;
+      const logs = getSavedLogsForCustomer(currentCustomer);
+      const target = logs.find(item => item.logId === logId);
+      if (!target) return;
+
+      if (typeof confirm === 'function' && !confirm(`다음 상담 메모를 삭제하시겠습니까?
+
+[${target.callDate}] ${target.memo}`)) {
+        return;
+      }
+
+      // 1. Remove from localStorage
+      const updatedLogs = logs.filter(item => item.logId !== logId);
+      setSavedLogsForCustomer(currentCustomer, updatedLogs);
+
+      // 2. Send delete request to Google Sheet via Apps Script
+      if (APPS_SCRIPT_WEBAPP_URL) {
+        try {
+          await fetch(APPS_SCRIPT_WEBAPP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'delete',
+              logId: logId,
+              origCallDate: target.callDate,
+              origMemo: target.memo,
+              name: target.name,
+              phone: target.phone
+            })
+          });
+        } catch(err) {
+          console.warn("Apps Script 삭제 호출 오류:", err);
+        }
+      }
+
+      // 3. Re-sync customer timeline & UI
+      if (editingLogId === logId) {
+        resetConsultModalToNew();
+      }
+      loadCustomerSavedLogs(currentCustomer);
+      renderTimeline(currentCustomer);
+      renderAnalytics(currentCustomer);
+      renderRawTabs(currentCustomer);
+      renderModalHistoryList();
+      showToast("상담메모가 삭제되었습니다.");
     }
 
     function closeConsultModal(e) {
@@ -1225,11 +1432,19 @@
       const appointment = document.getElementById('aiApptInput').value.trim() || '없음';
       const hospital = document.getElementById('aiHospInput').value.trim() || '없음';
 
+      const logs = getSavedLogsForCustomer(currentCustomer);
+      const isEdit = Boolean(editingLogId);
+      const existingItem = isEdit ? logs.find(item => item.logId === editingLogId) : null;
+      const logId = isEdit ? editingLogId : ("LOG_" + Date.now() + "_" + Math.floor(Math.random() * 1000));
+
       btn.disabled = true;
-      btn.innerHTML = `<span>⏳ 상담일지 저장 중...</span>`;
-      statusText.innerHTML = `<span style="color:#3b82f6;">●</span> SBO-상담일지 DB에 기록 중...`;
+      statusText.innerHTML = `<span style="color:#3b82f6;">●</span> SBO-상담일지 DB에 ${isEdit ? '수정사항 반영' : '기록'} 중...`;
 
       const payload = {
+        action: isEdit ? 'update' : 'create',
+        logId: logId,
+        origCallDate: existingItem ? existingItem.callDate : callDate,
+        origMemo: existingItem ? existingItem.memo : memo,
         callDate: callDate,
         name: name,
         card: card,
@@ -1252,39 +1467,29 @@
         }
       }
 
-      // 고객 타임라인에 즉시 추가
-      const newEvt = [
-        callDate.split(' ')[0],
-        "상담일지",
-        "전화상담",
-        "상담완료",
-        `전화상담: ${memo.slice(0, 32)}${memo.length > 32 ? '...' : ''}`,
-        `상담내용: ${memo} | (AI)약속일시: ${appointment} | (AI)진료병원: ${hospital}`,
-        "SBO-상담일지"
-      ];
-      currentCustomer.ev.unshift(newEvt);
+      if (isEdit) {
+        const idx = logs.findIndex(item => item.logId === editingLogId);
+        if (idx !== -1) {
+          logs[idx] = payload;
+        } else {
+          logs.unshift(payload);
+        }
+      } else {
+        logs.unshift(payload);
+      }
+      setSavedLogsForCustomer(currentCustomer, logs);
+
+      loadCustomerSavedLogs(currentCustomer);
       renderTimeline(currentCustomer);
       renderAnalytics(currentCustomer);
       renderRawTabs(currentCustomer);
-
-      // 브라우저 로컬 스토리지에도 백업 저장
-      const historyKey = "SBO_LOG_" + (phone || name);
-      const prevLogs = JSON.parse(localStorage.getItem(historyKey) || "[]");
-      prevLogs.unshift(payload);
-      localStorage.setItem(historyKey, JSON.stringify(prevLogs));
+      renderModalHistoryList();
 
       btn.disabled = false;
-      btn.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-          <polyline points="17 21 17 13 7 13 7 21"></polyline>
-          <polyline points="7 3 7 8 15 8"></polyline>
-        </svg>
-        <span>저장 (상담일지 DB 기록)</span>
-      `;
-      statusText.innerHTML = `<span style="color:#10b981;">✓</span> 상담일지 저장 완료`;
+      statusText.innerHTML = `<span style="color:#10b981;">✓</span> 상담일지 ${isEdit ? '수정' : '저장'} 완료`;
+      resetConsultModalToNew();
       document.getElementById('consultModal').style.display = 'none';
-      showToast(`상담메모 저장 완료! [약속: ${appointment} / 병원: ${hospital}]`);
+      showToast(isEdit ? `상담메모가 수정되었습니다! [약속: ${appointment} / 병원: ${hospital}]` : `상담메모 저장 완료! [약속: ${appointment} / 병원: ${hospital}]`);
     }
 
     function showToast(msg) {

@@ -1,5 +1,5 @@
 /**
- * SBO 상담일지 DB 자동 연동 및 AI 일정/병원 분석 웹앱 (Google Apps Script)
+ * SBO 상담일지 DB 자동 연동 (저장 / 수정 / 삭제 지원) & AI 일정/병원 분석 웹앱 (Google Apps Script)
  * 스프레드시트: SBO-상담일지 (ID: 1m__S_nHq5Q_5pN6b20IWjrIqbHzBc1GzDTfaCWfL22M)
  */
 
@@ -8,7 +8,6 @@ function doPost(e) {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
     var data = {};
     
-    // JSON or form-data parsing
     if (e.postData && e.postData.contents) {
       try {
         data = JSON.parse(e.postData.contents);
@@ -19,17 +18,77 @@ function doPost(e) {
       data = e.parameter;
     }
     
+    var action = data.action || "create"; // "create", "update", "delete"
+    var logId = data.logId || "";
     var callDate = data.callDate || Utilities.formatDate(new Date(), "Asia/Seoul", "yyyy-MM-dd HH:mm");
+    var origCallDate = data.origCallDate || callDate;
     var name = data.name || "";
     var card = data.card || "";
     var phone = data.phone || "";
     var memo = data.memo || "";
+    var origMemo = data.origMemo || "";
     
-    // AI 일정 및 병원 분석
     var aiAnalysis = analyzeMemoAI(memo);
     var appointment = data.appointment || aiAnalysis.appointment || "없음";
     var hospital = data.hospital || aiAnalysis.hospital || "없음";
+
+    // 수정(update) 또는 삭제(delete)일 경우 기존 행 탐색
+    if (action === "update" || action === "delete") {
+      var values = sheet.getDataRange().getValues();
+      var targetRow = -1;
+      var cleanTargetPhone = String(phone).replace(/[^0-9]/g, "");
+      
+      // 아래에서 위로 검색 (최근 기록 우선 매칭)
+      for (var i = values.length - 1; i >= 1; i--) {
+        var rDate = String(values[i][0]).trim();
+        var rName = String(values[i][1]).trim();
+        var rPhone = String(values[i][3]).replace(/[^0-9]/g, "");
+        var rMemo = String(values[i][4]).trim();
+        
+        var phoneMatch = (cleanTargetPhone && rPhone === cleanTargetPhone) || (rName === name);
+        var dateOrMemoMatch = (rDate === origCallDate) || (origMemo && rMemo === origMemo);
+        
+        if (phoneMatch && dateOrMemoMatch) {
+          targetRow = i + 1; // 1-based row index
+          break;
+        }
+      }
+      
+      if (targetRow !== -1) {
+        if (action === "delete") {
+          sheet.deleteRow(targetRow);
+          return ContentService.createTextOutput(JSON.stringify({
+            status: "success",
+            action: "delete",
+            message: "상담일지가 삭제되었습니다."
+          })).setMimeType(ContentService.MimeType.JSON);
+        } else if (action === "update") {
+          sheet.getRange(targetRow, 1, 1, 7).setValues([[
+            callDate,
+            name,
+            card,
+            phone,
+            memo,
+            appointment,
+            hospital
+          ]]);
+          return ContentService.createTextOutput(JSON.stringify({
+            status: "success",
+            action: "update",
+            message: "상담일지가 수정되었습니다."
+          })).setMimeType(ContentService.MimeType.JSON);
+        }
+      } else if (action === "delete") {
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "not_found",
+          action: "delete",
+          message: "시트에서 삭제할 대상 행을 찾지 못했습니다."
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+      // 만약 update인데 기존 행을 못 찾았으면 새로 추가(fallback)
+    }
     
+    // 신규 저장 (create)
     // [A] 전화상담일, [B] 성명, [C] 카드번호, [D] 전화번호, [E] 상담내용, [F] (AI) 약속일시, [G] (AI) 진료병원
     sheet.appendRow([
       callDate,
@@ -41,10 +100,12 @@ function doPost(e) {
       hospital
     ]);
     
-    var result = {
+    return ContentService.createTextOutput(JSON.stringify({
       status: "success",
+      action: "create",
       message: "상담일지가 성공적으로 저장되었습니다.",
       savedData: {
+        logId: logId,
         callDate: callDate,
         name: name,
         card: card,
@@ -53,50 +114,40 @@ function doPost(e) {
         appointment: appointment,
         hospital: hospital
       }
-    };
-    
-    return ContentService.createTextOutput(JSON.stringify(result))
-      .setMimeType(ContentService.MimeType.JSON);
+    })).setMimeType(ContentService.MimeType.JSON);
       
   } catch (error) {
-    var errorResult = {
+    return ContentService.createTextOutput(JSON.stringify({
       status: "error",
       message: error.toString()
-    };
-    return ContentService.createTextOutput(JSON.stringify(errorResult))
-      .setMimeType(ContentService.MimeType.JSON);
+    })).setMimeType(ContentService.MimeType.JSON);
   }
 }
 
 function doGet(e) {
-  // GET 요청 시 최근 상담일지 50건 반환 (대시보드 실시간 조회용)
   try {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
     var data = sheet.getDataRange().getValues();
     var rows = [];
-    
-    // 헤더 제외하고 데이터 추출
     for (var i = 1; i < data.length; i++) {
       var row = data[i];
       if (row[0] || row[1] || row[3]) {
         rows.push({
-          callDate: row[0],
-          name: row[1],
-          card: row[2],
-          phone: row[3],
-          memo: row[4],
-          appointment: row[5],
-          hospital: row[6]
+          callDate: String(row[0]),
+          name: String(row[1]),
+          card: String(row[2]),
+          phone: String(row[3]),
+          memo: String(row[4]),
+          appointment: String(row[5]),
+          hospital: String(row[6])
         });
       }
     }
-    
     return ContentService.createTextOutput(JSON.stringify({
       status: "success",
       count: rows.length,
       logs: rows
     })).setMimeType(ContentService.MimeType.JSON);
-    
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({
       status: "error",
@@ -105,14 +156,10 @@ function doGet(e) {
   }
 }
 
-/**
- * 상담 메모 내용 기반 AI 일정 및 병원 자연어 분석 엔진
- */
 function analyzeMemoAI(text) {
   if (!text) return { appointment: "없음", hospital: "없음" };
   var t = text.trim();
   
-  // 1. 진료병원 감지
   var hospital = "없음";
   var hospRegexes = [
     /(화이트\s*e\s*치과(?:\s*\(?[서덕해][가-힣]*점\)?)?)/i,
@@ -126,9 +173,8 @@ function analyzeMemoAI(text) {
     /(연제\s*일신\s*병원)/,
     /(메디\s*우먼)/,
     /([가-힣]{2,10}(?:안과|치과|병원|의원))/,
-    /([덕서해]\w*점\s*(?:치과|안과)?)/
+    /([덕서해][가-힣]*점\s*(?:치과|안과)?)/
   ];
-  
   for (var i = 0; i < hospRegexes.length; i++) {
     var match = t.match(hospRegexes[i]);
     if (match) {
@@ -137,7 +183,6 @@ function analyzeMemoAI(text) {
     }
   }
   
-  // 2. 약속일시 감지
   var appointment = "없음";
   var dateRegexes = [
     /(\d{4}[-./년]\s*\d{1,2}[-./월]\s*\d{1,2}일?(?:\s*(?:오전|오후)?\s*\d{1,2}(?:시|:\d{2})(?:\s*\d{1,2}분)?)?)/,
@@ -145,7 +190,6 @@ function analyzeMemoAI(text) {
     /((?:오늘|내일|모레|다음주\s*[월화수목금토일]요일?)\s*(?:오전|오후)?\s*\d{1,2}(?:시|:\d{2})(?:\s*\d{1,2}분)?)/,
     /(\d{1,2}일\s*(?:오전|오후)\s*\d{1,2}시(?:\s*\d{1,2}분)?)/
   ];
-  
   for (var j = 0; j < dateRegexes.length; j++) {
     var dMatch = t.match(dateRegexes[j]);
     if (dMatch) {
@@ -154,8 +198,5 @@ function analyzeMemoAI(text) {
     }
   }
   
-  return {
-    appointment: appointment,
-    hospital: hospital
-  };
+  return { appointment: appointment, hospital: hospital };
 }
